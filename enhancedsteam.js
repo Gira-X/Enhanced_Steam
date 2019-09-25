@@ -614,6 +614,9 @@ function get_http(url, callback, requestSettings) {
 	jqxhr.done(callback);
 
 	jqxhr.fail(function(jqxhr, textStatus, errorThrown) {
+		console.log('FAILED: textStatus: ' + textStatus);
+		console.log('FAILED: jqxhr: ' + jqxhr);
+		console.log('FAILED on URL: ' + url);
 		storage.get(function(settings) {
 			if (settings.show_progressbar) {
 				$("#es_progress").addClass("error").attr({"title": ""});
@@ -4312,6 +4315,15 @@ function minimize_active_listings() {
 	});
 }
 
+document.body.onkeydown = function(event){
+    event = event || window.event;
+    var keycode = event.charCode || event.keyCode;
+    if (keycode === 108) {
+		console.log('calling add_lowest_market_price()');
+		add_lowest_market_price();
+    }
+}
+
 // Show the lowest market price for items you're selling
 function add_lowest_market_price() {
 	if (is_signed_in) {
@@ -4370,7 +4382,8 @@ function add_lowest_market_price() {
 		function process_listings_rows(sel) {
 			var q = 0;
 
-			$(sel).slice(0, 5).each(function(i, node) {
+			$(sel).slice(0, 1).each(function(i, node) {
+
 				var link = $(node).find(".market_listing_item_name_link").attr("href");
 
 				if (link) {
@@ -4385,7 +4398,9 @@ function add_lowest_market_price() {
 							process_listings_rows(sel);
 						}
 					} else {
+
 						get_http(protocol + "//steamcommunity.com/market/priceoverview/?country=" + cc + "&currency=" + currency + "&appid=" + appid + "&market_hash_name=" + market_hash_name, function(json) {
+
 							var data = JSON.parse(json);
 
 							if (data["success"]) {
@@ -4397,7 +4412,11 @@ function add_lowest_market_price() {
 							q--;
 							// Continue with the next rows if queue is empty
 							if (q == 0) {
-								process_listings_rows(sel);
+								// not using a timeout will quickly result in 429 Too Many Requests
+								// after about 20 items, so we delay this
+								setTimeout(function() { 
+									process_listings_rows(sel);
+								}, 3000);
 							}
 						});
 
