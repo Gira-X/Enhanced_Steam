@@ -614,9 +614,7 @@ function get_http(url, callback, requestSettings) {
 	jqxhr.done(callback);
 
 	jqxhr.fail(function(jqxhr, textStatus, errorThrown) {
-		console.log('FAILED: textStatus: ' + textStatus);
-		console.log('FAILED: jqxhr: ' + jqxhr);
-		console.log('FAILED on URL: ' + url);
+		console.log('URL call failed on: ' + url);
 		storage.get(function(settings) {
 			if (settings.show_progressbar) {
 				$("#es_progress").addClass("error").attr({"title": ""});
