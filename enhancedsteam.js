@@ -4318,7 +4318,7 @@ function minimize_active_listings() {
 document.body.onkeydown = function(event){
     event = event || window.event;
     var keycode = event.charCode || event.keyCode;
-    if (keycode === 108) {
+    if (keycode === 76) {
 		console.log('calling add_lowest_market_price()');
 		add_lowest_market_price();
     }
